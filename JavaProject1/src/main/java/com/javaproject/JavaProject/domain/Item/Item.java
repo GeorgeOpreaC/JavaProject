@@ -1,0 +1,46 @@
+package com.javaproject.JavaProject.domain.Item;
+
+import jakarta.persistence.*;
+
+@Entity
+@Table(name="Item", schema ="public" )
+public class Item {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY )
+    int id;
+    private String name;
+    private String category;
+    private String description;
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getCategory() {
+        return category;
+    }
+
+    public void setCategory(String category) {
+        this.category = category;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+}
