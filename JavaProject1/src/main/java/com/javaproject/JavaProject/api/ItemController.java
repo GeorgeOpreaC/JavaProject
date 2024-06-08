@@ -1,9 +1,11 @@
 package com.javaproject.JavaProject.api;
 //BussinesLogic
+import com.javaproject.JavaProject.Exception.BadRequestException;
 import com.javaproject.JavaProject.api.Dto.ItemDtoAdd;
 import com.javaproject.JavaProject.api.Dto.ItemDtoUpdate;
 import com.javaproject.JavaProject.domain.Item.Item;
 import com.javaproject.JavaProject.domain.Item.ItemRepository;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -52,7 +54,7 @@ public class ItemController {
     ){
 
         Item ItemToBeUpdated = itemRepository.findById(id)
-                .orElseThrow(()-> new RuntimeException("The item with this id doesn't exist:" + id));
+                .orElseThrow(()-> new BadRequestException("The item with this id doesn't exist:" + id));
 
         ItemToBeUpdated.setName(updateDto.getName());
         ItemToBeUpdated.setCategory(updateDto.getCategory());
@@ -60,6 +62,16 @@ public class ItemController {
 
         return itemRepository.save(ItemToBeUpdated);
 
+    }
+
+    /**Delete*/
+    @DeleteMapping("/delete/{id}")
+    ResponseEntity<String>  delete(@PathVariable Integer id){
+        Item itemToBeDeleted = itemRepository.findById(id)
+                .orElseThrow(()-> new BadRequestException("The item with this id doesn't exist:" + id));
+
+        itemRepository.delete(itemToBeDeleted);
+        return ResponseEntity.ok("The item was deleted!");
     }
 
 
