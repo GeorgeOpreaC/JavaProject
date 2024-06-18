@@ -3,7 +3,8 @@ package com.javaproject.JavaProject.api.Dto;
 public class ItemDtoUpdate {
 
     private String name;
-    private String category;
+   int userId;
+   int inventoryId;
     private String description;
 
     public String getName() {
@@ -14,12 +15,20 @@ public class ItemDtoUpdate {
         this.name = name;
     }
 
-    public String getCategory() {
-        return category;
+    public int getUserId() {
+        return userId;
     }
 
-    public void setCategory(String category) {
-        this.category = category;
+    public void setUserId(int userId) {
+        this.userId = userId;
+    }
+
+    public int getInventoryId() {
+        return inventoryId;
+    }
+
+    public void setInventoryId(int inventoryId) {
+        this.inventoryId = inventoryId;
     }
 
     public String getDescription() {

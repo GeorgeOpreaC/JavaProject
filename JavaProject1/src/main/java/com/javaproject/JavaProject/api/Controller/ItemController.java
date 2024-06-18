@@ -1,10 +1,12 @@
-package com.javaproject.JavaProject.api;
+package com.javaproject.JavaProject.api.Controller;
 //BussinesLogic
 import com.javaproject.JavaProject.Exception.BadRequestException;
 import com.javaproject.JavaProject.api.Dto.ItemDtoAdd;
 import com.javaproject.JavaProject.api.Dto.ItemDtoUpdate;
+import com.javaproject.JavaProject.domain.Inventory.InventoryRepository;
 import com.javaproject.JavaProject.domain.Item.Item;
 import com.javaproject.JavaProject.domain.Item.ItemRepository;
+import com.javaproject.JavaProject.domain.User.UserRepository;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,9 +19,14 @@ import java.util.List;
 public class ItemController {
 
     final ItemRepository itemRepository;
+    final InventoryRepository inventoryRepository;
 
-    public ItemController(ItemRepository itemRepository) {
+    final UserRepository userRepository;
+
+    public ItemController(ItemRepository itemRepository, InventoryRepository inventoryRepository, InventoryRepository inventoryRepository1, UserRepository userRepository) {
         this.itemRepository = itemRepository;
+        this.inventoryRepository = inventoryRepository1;
+        this.userRepository = userRepository;
     }
 
     @GetMapping("/items")
@@ -37,9 +44,17 @@ public class ItemController {
 
         Item itemToBeSaved= new Item();
 
+        if (commandDto.getName() == null || commandDto.getName()== " "){
+            throw new BadRequestException("Should be completed an item's name!");
+        }
+        /**Verificam daca exista categoria salvata in DB*/
+        inventoryRepository.findById((long) commandDto.getInventoryId())
+                        .orElseThrow(()-> new BadRequestException("The inventory doesn't exist!"));
+
         itemToBeSaved.setName(commandDto.getName());
-        itemToBeSaved.setCategory(commandDto.getCategory());
         itemToBeSaved.setDescription(commandDto.getDescription());
+        itemToBeSaved.setUserId(commandDto.getUserId());
+        itemToBeSaved.setInventoryId(commandDto.getInventoryId());
 
         return itemRepository.save(itemToBeSaved);
 
@@ -57,8 +72,9 @@ public class ItemController {
                 .orElseThrow(()-> new BadRequestException("The item with this id doesn't exist:" + id));
 
         ItemToBeUpdated.setName(updateDto.getName());
-        ItemToBeUpdated.setCategory(updateDto.getCategory());
         ItemToBeUpdated.setDescription(updateDto.getDescription());
+        ItemToBeUpdated.setUserId(updateDto.getUserId());
+        ItemToBeUpdated.setInventoryId(updateDto.getInventoryId());
 
         return itemRepository.save(ItemToBeUpdated);
 
@@ -74,7 +90,15 @@ public class ItemController {
         return ResponseEntity.ok("The item was deleted!");
     }
 
+    @GetMapping("/filteritem/{userId}")
+    List<Item> gellAllItemsByuserId(
+            @PathVariable Integer userId
+    ) {
+        userRepository.findById(Long.valueOf(userId))
+                .orElseThrow(()->new BadRequestException("The selected user does not exist"));
 
+        return itemRepository.findAllByUserId(userId);
+    }
 
 
     @GetMapping

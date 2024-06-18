@@ -1,21 +1,71 @@
-package com.javaproject.JavaProject.api;
+package com.javaproject.JavaProject.api.Controller;
 
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import com.javaproject.JavaProject.Exception.BadRequestException;
+import com.javaproject.JavaProject.api.Dto.InventoryDtoAdd;
+import com.javaproject.JavaProject.api.Dto.InventoryDtoUpdate;
+import com.javaproject.JavaProject.domain.Inventory.Inventory;
+import com.javaproject.JavaProject.domain.Inventory.InventoryRepository;
+import com.javaproject.JavaProject.domain.User.User;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/inventory")
 
 public class InventoryController {
 
-    @GetMapping("/test")
+    final InventoryRepository inventoryRepository;
 
-    public String itemTest() {
-        return "test";
+    public InventoryController(InventoryRepository inventoryRepository) {
+        this.inventoryRepository = inventoryRepository;
     }
-    @GetMapping
-    public String itemString(){
-        return "Inventory String";
+
+    @GetMapping("/inventory")
+    public List<Inventory> getAllInventories(){
+        return inventoryRepository.findAll();
     }
-}
+    @GetMapping("/inventory/{id}")
+    Inventory getAllInventories(@PathVariable Integer id){
+        return inventoryRepository.findById(Long.valueOf(id)).get(); }
+
+        @PostMapping("/add")
+        Inventory add(@RequestBody InventoryDtoAdd commandDto ){
+        Inventory inventoryToBeSaved = new Inventory();
+
+        inventoryToBeSaved.setId(commandDto.getId());
+        inventoryToBeSaved.setUser(commandDto.getUser());
+        inventoryToBeSaved.setItem(commandDto.getItem());
+        inventoryToBeSaved.setQuantity(commandDto.getQuantity());
+
+        return inventoryRepository.save(inventoryToBeSaved);
+
+        }
+        @PostMapping("/update/{id}")
+    Inventory update(
+                @PathVariable Integer id,
+                @RequestBody InventoryDtoUpdate dtoUpdate
+                ) {
+            Inventory InventoryToBeUpdated = inventoryRepository.findById(Long.valueOf(id))
+                    .orElseThrow(() -> new BadRequestException("Doesn't exist:" + id));
+            InventoryToBeUpdated.setId(dtoUpdate.getId());
+            InventoryToBeUpdated.setUser(dtoUpdate.getUser());
+            InventoryToBeUpdated.setItem(dtoUpdate.getItem());
+            InventoryToBeUpdated.setQuantity(dtoUpdate.getQuantity());
+
+            return inventoryRepository.save(InventoryToBeUpdated);
+
+        }
+    @DeleteMapping("/delete/{id}")
+    ResponseEntity<String> delete(@PathVariable Integer id){
+        Inventory inventoryToBeDeleted = inventoryRepository.findById(Long.valueOf(id))
+                .orElseThrow(()-> new BadRequestException("Doesn't exist:" + id));
+
+        inventoryRepository.delete(inventoryToBeDeleted);
+        return ResponseEntity.ok("Deleted!");
+    }
+
+    }
+
 

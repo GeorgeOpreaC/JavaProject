@@ -9,8 +9,12 @@ public class Item {
     @GeneratedValue(strategy = GenerationType.IDENTITY )
     int id;
     private String name;
-    private String category;
+
     private String description;
+
+    @Column(nullable = true)
+    int userId;
+    int inventoryId;
 
     public int getId() {
         return id;
@@ -28,13 +32,7 @@ public class Item {
         this.name = name;
     }
 
-    public String getCategory() {
-        return category;
-    }
 
-    public void setCategory(String category) {
-        this.category = category;
-    }
 
     public String getDescription() {
         return description;
@@ -42,5 +40,21 @@ public class Item {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public int getUserId() {
+        return userId;
+    }
+
+    public void setUserId(int userId) {
+        this.userId = userId;
+    }
+
+    public int getInventoryId() {
+        return inventoryId;
+    }
+
+    public void setInventoryId(int inventoryId) {
+        this.inventoryId = inventoryId;
     }
 }
